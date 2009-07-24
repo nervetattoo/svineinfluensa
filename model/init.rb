@@ -18,8 +18,8 @@ class County < Sequel::Model
         counties = ['Østfold','Akershus','Oslo','Hedmark','Oppland','Buskerud',
             'Vestfold','Telemark','Aust-Agder','Vest-Agder','Rogaland',
             'Hordaland','Sogn og Fjordane','Møre og Romsdal','Sør-Trøndelag',
-            'Nord-Trøndelag','Nordland','Troms','Finnmark','Utenfor Norge',
-            'Ukjent Fylke']
+            'Nord-Trøndelag','Nordland','Troms','Finnmark',
+            'Utenfor Fastlands-Norge', 'Ukjent fylke']
         counties.each do |c|
             create :name => c
         end
@@ -32,8 +32,9 @@ class Contamination < Sequel::Model
 
         integer :count_male
         integer :count_female
-        integer :year, :empty=>false, :unique=>true
-        integer :month, :empty=>false, :unique=>true
+        integer :year, :empty=>false
+        integer :month, :empty=>false
+        foreign_key :county_id
     end
     many_to_one :county
     create_table unless table_exists?

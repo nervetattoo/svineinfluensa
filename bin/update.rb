@@ -1,3 +1,6 @@
+# Update contaminations from MSIS
+# http://www.msis.no/emsisexternalweb/DynamiskRapport.aspx
+
 $:.unshift(
     File.join(File.dirname(__FILE__), '..'),
     File.dirname(__FILE__)
@@ -7,10 +10,6 @@ require 'nokogiri'
 require 'restclient'
 require 'model/init'
 
-# Update contaminations from MSIS
-# http://www.msis.no/emsisexternalweb/DynamiskRapport.aspx
-
-# Use restclient to post form that will give us nifty results
 
 # What month to update?
 if ARGV[0] != nil and ARGV[0].to_i >= 1 and ARGV[0].to_i <= 12
@@ -50,11 +49,39 @@ response = resource.post({:'__EVENTARGUMENT' => '',
     :m_ctrlKjonn => 'Alle',
     :m_ctrlKolonner => 0,
     :m_ctrlLagRapport => "Lag+tabell",
-    :m_ctrlMonths => 7,
+    :m_ctrlMonths => month,
     :m_ctrlRader => 1,
     :m_ctrlSmitteverdensdel => 'Alle',
     :m_ctrlYears => 2009},
     {:cookies => {:'ASP.NET_SessionId' => resp.cookies[cookie]}})
 
-document = response.to_s
-puts document
+# Houston, we have lift off
+# Now parse that motherfucker with nokogiri
+document = Nokogiri::HTML.parse(response.to_s)
+# Find counties
+i = 1
+total = 0
+document.css('table tr td font div').each do |node|
+    i = i + 1
+    # Find women value
+    women = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(2) td:nth-of-type(#{i}) font").first.content
+    men = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(2) td:nth-of-type(#{i}) font").first.content
+    if women == '-'
+        women = 0
+    end
+    if men == '-'
+        men = 0
+    end
+    cnt = node.content.to_s
+    county = County[:name=>cnt]
+    contamination = Contamination.create :count_male => men,
+        :count_female => women, :year => 2009,
+        :month => month
+    contamination.county = county
+    puts "Added [#{cnt}] Men:#{men} Women:#{women}"
+    total = total.to_i + men.to_i + women.to_i
+end
+# Finalize
+Update.create :time => Time.now.to_i,
+    :count => total
+puts "Finalized update. Total for this update was: #{total}"
