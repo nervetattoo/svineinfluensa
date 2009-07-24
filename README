@@ -1,0 +1,6 @@
+Requirements:
+
+rubygems
+nokogiri
+sequel
+markdillon-restclient
