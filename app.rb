@@ -21,6 +21,8 @@ get '/' do
     end
     @total = DB[:contaminations].sum(:count_male) +
         DB[:contaminations].sum(:count_female)
+    # Enforce utf-8 so things looks neat
+    content_type 'text/html', :charset => 'utf-8'
     haml :index
 end
 
