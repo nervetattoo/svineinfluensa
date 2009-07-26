@@ -11,6 +11,7 @@
           %ul
             %li
               %a{:href=>"/"} Hjem
+      #content
         #api
           %p
             Du kan hente månedsstatistikk over H1N1-spredning i Norge ved å bruke følgede URL-skjema:
@@ -20,6 +21,8 @@
             Det er også mulig å få rapport for et enkeltfylke ved å bruke /fylke:
             %a{:href=>'/Oslo',:title=>'Se Oslo-statistikk'} http://h1n1.raymondjulin.com/Oslo
           %p
+            Sist oppdatert 
+            =@updated.created
             All data leveres i JSON-format.
-      #content=yield
+        =yield
       #footer

@@ -8,6 +8,11 @@ require 'haml'
 require 'model'
 require 'json'
 
+before do
+    @updated = Update.order(:created.desc).last
+    puts @updated.created
+end
+
 get '/' do
     month = Time.now.month
     @data =[] 
