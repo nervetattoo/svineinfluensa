@@ -26,16 +26,43 @@ get '/' do
     haml :index
 end
 
-get '/:year' do
+#get '/:year' do
+get %r{/([0-9]{4}/?$)} do
+    year = params[:captures].first
     content_type :json
-    {:status => true, :message => "#{params[:year]}",
-        :data => get_stats(:year=>params[:year])}.to_json
+    {:status => true, :message => "#{year}",
+        :data => get_stats(:year=>year)}.to_json
 end
 
-get '/:year/:month' do
+#get '/:year/:month' do
+get %r{/([0-9]{4})/([0-9]{1,2})} do
+    year = params[:captures].first
+    month = params[:captures][1]
     content_type :json
-    {:status => true, :message => "#{params[:year]}-#{params[:month]}",
-        :data => get_stats(:year=>params[:year], :month=>params[:month])}.to_json
+    {:status => true, :message => "#{year}-#{month}",
+        :data => get_stats(:year=>year, :month=>month)}.to_json
+end
+
+# Get county specific stats
+get '/:county' do
+    # Nasty stuff to try and ensure that capitalization etc is as correct as
+    # possible
+    county_name = params[:county].split('-').collect{|v| v.capitalize}.
+        join('-').split(' ').collect{|v| (v=='og')?v:v.capitalize}.join(' ')
+    county = County[:name => county_name]
+    content_type :json
+    if county != nil
+        c = Contamination.filter(:county_id => county.id).order(:month.desc)
+        data = []
+        c.each do |p|
+            data << {:year=>p.year, :month=>p.month,
+                :male=>p.count_male,:female=>p.count_female}
+        end
+        {:status => true, :message => "#{county.name}",
+            :data => data}.to_json
+    else
+        {:status => false, :message => "Fylke eksisterer ikke"}.to_json
+    end
 end
 
 def get_stats(opts)
