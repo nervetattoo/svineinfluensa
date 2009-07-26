@@ -53,3 +53,7 @@ div#stats h2 {
 table.tablesorter td {
     line-height: 1.1em;
 }
+
+#footer {
+    clear: both;
+}
