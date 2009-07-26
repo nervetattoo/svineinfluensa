@@ -32,6 +32,7 @@ class Contamination < Sequel::Model
 
         integer :count_male
         integer :count_female
+        integer :count_unknown
         integer :year, :empty=>false
         integer :month, :empty=>false
         foreign_key :county_id

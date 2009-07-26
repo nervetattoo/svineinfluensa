@@ -6,6 +6,7 @@
         %th Fylke
         %th Menn
         %th Kvinner
+        %th Ukjent
         %th Total
     %tbody
       - @latest.each do |@d|
@@ -13,13 +14,15 @@
           %td=@d[:county]
           %td=@d[:male]
           %td=@d[:female]
-          %td=@d[:female] + @d[:male]
+          %td=@d[:unknown]
+          %td=@d[:female] + @d[:male] + @d[:unknown]
     %tfooter
       %tr
         %td Total
         %td=@total[:latest_m]
         %td=@total[:latest_f]
-        %td=@total[:latest_f] + @total[:latest_m]
+        %td=@total[:latest_u]
+        %td=@total[:latest_f] + @total[:latest_m] + @total[:latest_u]
 #all_container
   %h2 Smittede totalt
   %table#all.tablesorter
@@ -28,6 +31,7 @@
         %th Fylke
         %th Menn
         %th Kvinner
+        %th Ukjent
         %th Total
     %tbody
       - @all.each do |@d|
@@ -35,10 +39,12 @@
           %td=@d[:county]
           %td=@d[:male]
           %td=@d[:female]
-          %td=@d[:female] + @d[:male]
+          %td=@d[:unknown]
+          %td=@d[:female] + @d[:male] + @d[:unknown]
     %tfooter
       %tr
         %td Total
         %td=@total[:all_m]
         %td=@total[:all_f]
-        %td=@total[:all_f] + @total[:all_m]
+        %td=@total[:all_u]
+        %td=@total[:all_f] + @total[:all_m] + @total[:all_u]

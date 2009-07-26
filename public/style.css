@@ -41,7 +41,7 @@ ul {
 /* Initial stats */
 div#latest_container,
 div#all_container {
-    width: 380px;
+    width: 46%;
     float:left;
 }
 div#latest_container {

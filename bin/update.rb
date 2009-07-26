@@ -66,29 +66,31 @@ document.css('table tr td font div').each do |node|
     # Find women value
     women = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(2) td:nth-of-type(#{i}) font").first.content
     men = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(3) td:nth-of-type(#{i}) font").first.content
-    if women == '-'
-        women = 0
-    end
-    if men == '-'
-        men = 0
-    end
+    unknown = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(4) td:nth-of-type(#{i}) font").first.content
+    
+    # - means 0
+    women = 0 if women == '-'
+    men = 0 if men == '-'
+    unknown = 0 if unknown == '-'
+
     cnt = node.content.to_s
     county = County[:name=>cnt]
     # If row for this month exists lets use it
     begin
         c = Contamination.filter(:year=>2009,:month=>month,
             :county_id=>county.id).first
-        c.update :count_male => men, :count_female => women
+        c.update :count_male => men, :count_female => women,
+            :count_unknown => unknown
         puts "[2009-#{month}] Updated [#{cnt}] Men:#{men} Women:#{women}"
     rescue Exception => e
         contamination = Contamination.create :count_male => men,
-            :count_female => women, :year => 2009,
+            :count_female => women, :year => 2009, :count_unknown => unknown,
             :month => month
         contamination.county = county
         contamination.save
         puts "[2009-#{month}] Added [#{cnt}] Men:#{men} Women:#{women}"
     end
-    total = total.to_i + men.to_i + women.to_i
+    total = total.to_i + men.to_i + women.to_i + unknown.to_i
 end
 # Finalize
 # Only log to Update if its recent data being pulled
