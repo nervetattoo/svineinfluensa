@@ -15,17 +15,34 @@ end
 
 get '/' do
     month = Time.now.month
-    @data =[] 
-    County.order(:name.asc).each do |c|
+    @latest =[] 
+    @all =[] 
+    @total = {
+        :all_m => 0,
+        :all_f => 0,
+        :latest_m => 0,
+        :latest_f => 0,
+    }
+    counties = County.all
+    counties.each do |c|
         set = Contamination.filter(:county_id=>c.id,:year=>2009,
             :month=>month).first
-        @data << { :county => c.name,
+        @latest << { :county => c.name,
             :male => set.count_male, :female => set.count_female}
+        count_m = 0
+        count_f = 0
+        Contamination.filter(:county_id=>c.id).each do |cc|
+            count_m = count_m + cc.count_male
+            count_f = count_f + cc.count_female
+        end
+        @all << { :county => c.name,
+            :male => count_m, :female => count_f}
+        # Calculate totals
+        @total[:all_m] = @total[:all_m] + count_m
+        @total[:all_f] = @total[:all_f] + count_f
+        @total[:latest_m] = @total[:latest_m] + set.count_male
+        @total[:latest_f] = @total[:latest_f] + set.count_female
     end
-    @data.each do |d|
-    end
-    @total = DB[:contaminations].sum(:count_male) +
-        DB[:contaminations].sum(:count_female)
     # Enforce utf-8 so things looks neat
     content_type 'text/html', :charset => 'utf-8'
     haml :index

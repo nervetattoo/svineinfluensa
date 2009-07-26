@@ -1,4 +1,4 @@
-#stats
+#latest_container
   %h2 Smittede denne måneden
   %table#latest.tablesorter
     %thead
@@ -6,9 +6,39 @@
         %th Fylke
         %th Menn
         %th Kvinner
+        %th Total
     %tbody
-      - @data.each do |@d|
+      - @latest.each do |@d|
         %tr
           %td=@d[:county]
           %td=@d[:male]
           %td=@d[:female]
+          %td=@d[:female] + @d[:male]
+    %tfooter
+      %tr
+        %td Total
+        %td=@total[:latest_m]
+        %td=@total[:latest_f]
+        %td=@total[:latest_f] + @total[:latest_m]
+#all_container
+  %h2 Smittede totalt
+  %table#all.tablesorter
+    %thead
+      %tr
+        %th Fylke
+        %th Menn
+        %th Kvinner
+        %th Total
+    %tbody
+      - @all.each do |@d|
+        %tr
+          %td=@d[:county]
+          %td=@d[:male]
+          %td=@d[:female]
+          %td=@d[:female] + @d[:male]
+    %tfooter
+      %tr
+        %td Total
+        %td=@total[:all_m]
+        %td=@total[:all_f]
+        %td=@total[:all_f] + @total[:all_m]

@@ -1,5 +1,4 @@
 /* Load when ready */
 $(function() {
-    console.log($('table'));
-    $("table").tablesorter({sortList:[[0,0]], widgets: ['zebra']});
+    $("table").tablesorter({sortList:[[3,1]], widgets: ['zebra']});
 })
