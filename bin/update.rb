@@ -8,7 +8,7 @@ $:.unshift(
 require 'rubygems'
 require 'nokogiri'
 require 'restclient'
-require 'model/init'
+require 'model'
 
 
 # What month to update?
@@ -74,14 +74,35 @@ document.css('table tr td font div').each do |node|
     end
     cnt = node.content.to_s
     county = County[:name=>cnt]
-    contamination = Contamination.create :count_male => men,
-        :count_female => women, :year => 2009,
-        :month => month
-    contamination.county = county
-    puts "Added [#{cnt}] Men:#{men} Women:#{women}"
+    # If row for this month exists lets use it
+    begin
+        c = Contamination.filter(:year=>2009,:month=>month,
+            :county_id=>county.id).first
+        c.update :count_male => men, :count_female => women
+        puts "[2009-#{month}] Updated [#{cnt}] Men:#{men} Women:#{women}"
+    rescue Exception => e
+        contamination = Contamination.create :count_male => men,
+            :count_female => women, :year => 2009,
+            :month => month
+        contamination.county = county
+        contamination.save
+        puts "[2009-#{month}] Added [#{cnt}] Men:#{men} Women:#{women}"
+    end
     total = total.to_i + men.to_i + women.to_i
 end
 # Finalize
-Update.create :time => Time.now.to_i,
-    :count => total
-puts "Finalized update. Total for this update was: #{total}"
+# Only log to Update if its recent data being pulled
+if Time.now.month.to_i == month.to_i
+    date = Date.new(Time.now.year, Time.now.month,Time.now.day)
+    # Get total since last
+    previous = Update.order(:created.desc).first
+    if previous != nil
+        current = total - previous.count
+    else
+        current = total
+    end
+    Update.create :count => total, :created => date
+    puts "Finalized update. Total for this update was: #{current}"
+else
+    puts "Finalized update without writing to Update"
+end

@@ -3,7 +3,7 @@ $:.unshift(
     File.dirname(__FILE__)
 )
 require 'rubygems'
-require 'model/init'
+require 'model'
 
 Contamination.all.each do |c|
     puts "#{c.year}.#{c.month} Men: #{c.count_male} Women: #{c.count_female}"

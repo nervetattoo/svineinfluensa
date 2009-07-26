@@ -5,7 +5,7 @@ $:.unshift(
 require 'rubygems'
 require 'sinatra'
 require 'haml'
-require 'model/init'
+require 'model'
 
 get '/' do
     @contaminations = Contaminations.all
