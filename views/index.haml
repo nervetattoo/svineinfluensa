@@ -1,0 +1,14 @@
+%h2 Smittede denne måneden
+%table
+  %tr
+    %th Fylke
+    - @data.each do |@d|
+      %td=@d[:county]
+  %tr
+    %th Menn
+    - @data.each do |@d|
+      %td=@d[:male]
+  %tr
+    %th Kvinner
+    - @data.each do |@d|
+      %td=@d[:female]

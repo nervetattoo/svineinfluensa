@@ -1,0 +1,15 @@
+!!!
+%html
+  %head
+    %title Svineinfluensa i Norge
+    %link{:rel=>'stylesheet',:type=>'text/css',:href=>'/style.css'}
+  %body
+    #main
+      #header
+        %h1 Svineinfluensa i Norge
+        #menu
+          %ul
+            %li
+              %a{:href=>"/login"} Login
+      #content=yield
+      #footer

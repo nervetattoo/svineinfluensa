@@ -46,7 +46,6 @@ end
 class Update < Sequel::Model
     set_schema do
         primary_key :id
-        integer :time, :empty=>false
         integer :count, :empty=>false
         date :created
     end

@@ -65,7 +65,7 @@ document.css('table tr td font div').each do |node|
     i = i + 1
     # Find women value
     women = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(2) td:nth-of-type(#{i}) font").first.content
-    men = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(2) td:nth-of-type(#{i}) font").first.content
+    men = document.css("table#m_ucReportGrid_m_ctrlRapportGrid tr:nth-of-type(3) td:nth-of-type(#{i}) font").first.content
     if women == '-'
         women = 0
     end
