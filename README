@@ -1,6 +1,16 @@
 Requirements:
+Gems:
 
 rubygems
 nokogiri
 sequel
 markdillon-restclient
+
+Apt:
+build-essential
+ruby1.8
+ruby1.8-dev
+libxml2-dev
+libxslt1
+nginx
+sqlite3
