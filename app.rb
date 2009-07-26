@@ -8,11 +8,18 @@ require 'haml'
 require 'model'
 require 'json'
 
+# Always keep updated date in handy
 before do
     @updated = Update.order(:created.desc).last
     puts @updated.created
 end
 
+# Just ship all errors to the frontpage
+not_found do
+    redirect '/'
+end
+
+# Frontpage, renders some nice stats
 get '/' do
     month = Time.now.month
     @latest =[] 
