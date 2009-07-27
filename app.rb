@@ -4,6 +4,7 @@ $:.unshift(
 )
 require 'rubygems'
 require 'sinatra'
+require 'memcache'
 require 'haml'
 require 'model'
 require 'json'
@@ -21,45 +22,55 @@ end
 
 # Frontpage, renders some nice stats
 get '/' do
-    month = Time.now.month
-    @latest =[] 
-    @all =[] 
-    @total = {
-        :all_m => 0,
-        :all_f => 0,
-        :all_u => 0,
-        :latest_m => 0,
-        :latest_f => 0,
-        :latest_u => 0,
-    }
-    counties = County.all
-    counties.each do |c|
-        set = Contamination.filter(:county_id=>c.id,:year=>2009,
-            :month=>month).first
-        @latest << { :county => c.name,
-            :male => set.count_male, :female => set.count_female,
-            :unknown => set.count_unknown }
-        count_m = 0
-        count_f = 0
-        count_u = 0
-        Contamination.filter(:county_id=>c.id).each do |cc|
-            count_m = count_m + cc.count_male
-            count_f = count_f + cc.count_female
-            count_u = count_u + cc.count_unknown
+    cache = MemCache.new 'localhost:11211', :namespace=>'h1n1'
+    cache.add('/', 'f', 3600) if cache.get '/' == nil
+    rendered = cache.get '/'
+    if rendered == nil
+        month = Time.now.month
+        @latest =[] 
+        @all =[] 
+        @total = {
+            :all_m => 0,
+            :all_f => 0,
+            :all_u => 0,
+            :latest_m => 0,
+            :latest_f => 0,
+            :latest_u => 0,
+        }
+        counties = County.all
+        counties.each do |c|
+            set = Contamination.filter(:county_id=>c.id,:year=>2009,
+                :month=>month).first
+            @latest << { :county => c.name,
+                :male => set.count_male, :female => set.count_female,
+                :unknown => set.count_unknown }
+            count_m = 0
+            count_f = 0
+            count_u = 0
+            Contamination.filter(:county_id=>c.id).each do |cc|
+                count_m = count_m + cc.count_male
+                count_f = count_f + cc.count_female
+                count_u = count_u + cc.count_unknown
+            end
+            @all << { :county => c.name,
+                :male => count_m, :female => count_f, :unknown => count_u}
+            # Calculate totals
+            @total[:all_m] = @total[:all_m] + count_m
+            @total[:all_f] = @total[:all_f] + count_f
+            @total[:all_u] = @total[:all_u] + count_u
+            @total[:latest_m] = @total[:latest_m] + set.count_male
+            @total[:latest_f] = @total[:latest_f] + set.count_female
+            @total[:latest_u] = @total[:latest_u] + set.count_unknown
         end
-        @all << { :county => c.name,
-            :male => count_m, :female => count_f, :unknown => count_u}
-        # Calculate totals
-        @total[:all_m] = @total[:all_m] + count_m
-        @total[:all_f] = @total[:all_f] + count_f
-        @total[:all_u] = @total[:all_u] + count_u
-        @total[:latest_m] = @total[:latest_m] + set.count_male
-        @total[:latest_f] = @total[:latest_f] + set.count_female
-        @total[:latest_u] = @total[:latest_u] + set.count_unknown
+        # Enforce utf-8 so things looks neat
+        content_type 'text/html', :charset => 'utf-8'
+        puts "Cached"
+        rendered = haml :index
+        cache.set('/', rendered, 600)
+    else
+        puts "Read from cache"
     end
-    # Enforce utf-8 so things looks neat
-    content_type 'text/html', :charset => 'utf-8'
-    haml :index
+    rendered
 end
 
 #get '/:year' do

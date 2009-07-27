@@ -5,6 +5,8 @@ rubygems
 nokogiri
 sequel
 markdillon-restclient
+memcache-client
+rack-cache
 
 Apt:
 build-essential
