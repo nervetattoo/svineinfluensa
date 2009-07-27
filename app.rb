@@ -12,7 +12,6 @@ require 'json'
 # Always keep updated date in handy
 before do
     @updated = Update.order(:created.desc).last
-    puts @updated.created
 end
 
 # Just ship all errors to the frontpage
