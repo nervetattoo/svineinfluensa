@@ -103,7 +103,7 @@ if Time.now.month.to_i == month.to_i
     else
         current = total
     end
-    Update.create :count => total, :created => date
+    Update.create :count => current, :created => date
     puts "Finalized update. Total for this update was: #{current}"
 else
     puts "Finalized update without writing to Update"
