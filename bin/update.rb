@@ -97,13 +97,17 @@ end
 if Time.now.month.to_i == month.to_i
     date = Date.new(Time.now.year, Time.now.month,Time.now.day)
     # Get total since last
-    previous = Update.order(:created.desc).first
-    if previous != nil
-        current = total - previous.count
+    yesterday = Update[:created => date - 1]
+    now = Update[:created => date]
+    if now == nil
+        now = Update.create :created => date 
+    end
+    if yesterday != nil
+        current = total - yesterday.count
     else
         current = total
     end
-    Update.create :count => current, :created => date
+    now.update(:count=>current)
     puts "Finalized update. Total for this update was: #{current}"
 else
     puts "Finalized update without writing to Update"
