@@ -96,19 +96,13 @@ end
 # Only log to Update if its recent data being pulled
 if Time.now.month.to_i == month.to_i
     date = Date.new(Time.now.year, Time.now.month,Time.now.day)
-    # Get total since last
-    yesterday = Update[:created => date - 1]
+    # Get total
     now = Update[:created => date]
     if now == nil
         now = Update.create :created => date 
     end
-    if yesterday != nil
-        current = total - yesterday.count
-    else
-        current = total
-    end
-    now.update(:count=>current)
-    puts "Finalized update. Total for this update was: #{current}"
+    now.update(:count=>total)
+    puts "Finalized update. Total at this update was: #{total}"
 else
     puts "Finalized update without writing to Update"
 end

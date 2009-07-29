@@ -11,7 +11,8 @@ require 'json'
 
 # Always keep updated date in handy
 before do
-    @updated = Update.order(:created.desc).last
+    date = Date.new(Time.now.year, Time.now.month,Time.now.day)
+    @updated = Update[:created => date]
 end
 
 # Just ship all errors to the frontpage
